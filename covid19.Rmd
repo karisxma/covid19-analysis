@@ -1,0 +1,110 @@
+---
+title: "Covid19"
+author: "Karishma Patel"
+date: "8/12/2021"
+output: html_document
+---
+
+#### What is Covid-19?
+
+COVID-19 is a disease caused by SARS-CoV-2 that can trigger what doctors call a respiratory tract infection. It can affect your upper respiratory tract (sinuses, nose, and throat) or lower respiratory tract (windpipe and lungs). It spreads the same way other coronaviruses do, mainly through person-to-person contact. Infections range from mild to deadly. [source](https://www.webmd.com/lung/coronavirus)
+
+### Ask
+#### Objectives and findings from this data
+
+* Analyze the data to find out what region has the highest death rate.
+* Discovering what region has the highest recovery rate.
+* Finding out how many active cases of COVID-19 there are per region.
+* Showing what regions could not contain the virus.
+
+#### Importing the data and installing/loading packages.
+```{r Importing and loading file, message=FALSE, warning=FALSE, results="hide"}
+library(tidyverse)
+library(data.table)
+library(ggplot2)
+library(janitor)
+library(dplyr)
+
+covid19 = read.csv("C:/Users/kpx13/OneDrive/Documents/covid19.csv")
+```
+
+### Prepare
+
+The dataset was collected from user [Devakumar kp](https://www.kaggle.com/imdevskp/corona-virus-report?select=country_wise_latest.csv), where they referenced and used data from [github](https://github.com/CSSEGISandData/COVID-19) and [worldmeters](https://www.worldometers.info/). This data has been checked by the author for its integrity (although the date/year is missing when the data was collected) and has been organized, and I will be using R to conduct my analysis.
+
+### Clean
+
+**The dataset set at hand has been pre-cleaned before data analysis by owner. The dataset has been organized by country, and the dataset has been tested. The owner has verified the reports of the data, however the dataset is missing the date/year, which could lead to bias and confusion**
+```{r}
+colnames(covid19)[10] <- "Recovered_100"
+colnames(covid19)[9] <- "Deaths_per_100"
+colnames(covid19)[14] <- "one_week_increase"
+```
+```{r}
+head(covid19)
+```
+
+### Analyze
+#### Which region has the most deaths?
+```{r}
+covid19 %>% 
+  ggplot(aes(reorder(WHO.Region,Deaths),Deaths)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  coord_flip() +
+  labs(title="Regions v Death", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Deaths") +
+  theme_minimal()
+
+covid19 %>% 
+  ggplot(aes(WHO.Region,Deaths_per_100)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  coord_flip() +
+  labs(title="Regions v Death per 100 cases", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Death per 100 cases") +
+  theme_minimal()
+```
+
+#### Which region had the highest recovery rate?
+```{r}
+covid19 %>% 
+  ggplot(aes(reorder(WHO.Region,Recovered),Recovered)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  labs(title="Regions v recovered", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Count") +
+  theme_minimal()
+
+covid19 %>% 
+  ggplot(aes(WHO.Region,Recovered_100)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  labs(title="Regions v Recovery per 100 cases", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Recovery per 100 cases") +
+  theme_minimal()
+```
+
+#### Active cases per region.
+```{r}
+covid19 %>% 
+  ggplot(aes(WHO.Region,Active)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  labs(title="Region v Active cases", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Active cases") +
+  theme_minimal()
+```
+
+#### Regions that could not control the virus
+```{r}
+covid19 %>% 
+  ggplot(aes(WHO.Region,one_week_increase)) +
+  geom_bar(stat="identity", fill="#78D0E2") +
+  coord_flip() +
+  labs(title="One week increase in cases", caption="Data collected by Kaggle user devakumar kp",
+       x="Region",
+       y="Count") +
+  theme_minimal()
+```
+
